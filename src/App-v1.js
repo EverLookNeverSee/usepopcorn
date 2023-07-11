@@ -9,6 +9,15 @@ export default function AppV1() {
 	const [watched, setWatched] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [selectedId, setSelectedId] = useState(null);
+
+	function handleSelectMovie(id) {
+		setSelectedId(setSelectedId => (id === setSelectedId ? null : id));
+	}
+
+	function handleCloseMovie() {
+		setSelectedId(null);
+	}
 
 	useEffect(() => {
 		async function fetchMovies() {
@@ -48,12 +57,18 @@ export default function AppV1() {
 					) : error ? (
 						<ErrorMessage message={error} />
 					) : (
-						<MoviesList movies={movies} />
+						<MoviesList movies={movies} onSelectMovie={handleSelectMovie} />
 					)}
 				</Box>
 				<Box>
-					<WatchedSummary watched={watched} />
-					<WatchedMoviesList watched={watched} />
+					{selectedId ? (
+						<MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie} />
+					) : (
+						<>
+							<WatchedSummary watched={watched} />
+							<WatchedMoviesList watched={watched} />
+						</>
+					)}
 				</Box>
 			</Main>
 		</>
@@ -127,19 +142,19 @@ function Box({children}) {
 	);
 }
 
-function MoviesList({movies}) {
+function MoviesList({movies, onSelectMovie}) {
 	return (
-		<ul className="list">
+		<ul className="list list-movies">
 			{movies?.map(movie => (
-				<Movie key={movie.imdbID} movie={movie} />
+				<Movie key={movie.imdbID} movie={movie} onSelectMovie={onSelectMovie} />
 			))}
 		</ul>
 	);
 }
 
-function Movie({movie}) {
+function Movie({movie, onSelectMovie}) {
 	return (
-		<li>
+		<li onClick={() => onSelectMovie(movie.imdbID)}>
 			<img src={movie.Poster} alt={`${movie.Title} poster`} />
 			<h3>{movie.Title}</h3>
 			<div>
@@ -149,6 +164,17 @@ function Movie({movie}) {
 				</p>
 			</div>
 		</li>
+	);
+}
+
+function MovieDetails({selectedId, onCloseMovie}) {
+	return (
+		<div className="details">
+			<button className="btn-back" onClick={onCloseMovie}>
+				&larr;
+			</button>
+			{selectedId}
+		</div>
 	);
 }
 
