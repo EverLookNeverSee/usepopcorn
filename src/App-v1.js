@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import StarRating from "./StarRating";
 
 const average = arr => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "a8d8f475";
@@ -17,6 +18,14 @@ export default function AppV1() {
 
 	function handleCloseMovie() {
 		setSelectedId(null);
+	}
+
+	function handleAddWatched(movie) {
+		setWatched(watched => [...watched, movie]);
+	}
+
+	function handleDeleteWatched(id) {
+		setWatched(watched => watched.filter(movie => movie.imdbID !== id));
 	}
 
 	useEffect(() => {
