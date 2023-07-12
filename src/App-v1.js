@@ -176,7 +176,60 @@ function Movie({movie, onSelectMovie}) {
 	);
 }
 
-function MovieDetails({selectedId, onCloseMovie}) {
+function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
+	const [movie, setMovie] = useState({});
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
+	const [userRating, setUserRating] = useState("");
+
+	const isWatched = watched.map(movie => movie.imdbID).includes(selectedId);
+	const userWatchedRating = watched.find(movie => movie.imdbID === selectedId)?.userRating;
+	const {
+		Title: title,
+		Year: year,
+		Poster: poster,
+		Runtime: runtime,
+		imdbRating,
+		Plot: plot,
+		Released: released,
+		Actors: actors,
+		Director: director,
+		Genre: genre,
+	} = movie;
+
+	useEffect(() => {
+		async function getMovieDetails() {
+			try {
+				setIsLoading(true);
+				setError("");
+				const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`);
+				if (!res.ok) throw new Error("Something went wrong with fetching movie details!");
+				const data = await res.json();
+				setMovie(data);
+			} catch (e) {
+				console.error(e.message);
+				setError(e.message);
+			} finally {
+				setIsLoading(false);
+			}
+		}
+		getMovieDetails();
+	}, [selectedId]);
+
+	function handleAdd() {
+		const newWatchedMovie = {
+			imdbID: selectedId,
+			title,
+			year,
+			poster,
+			imdbRating: Number(imdbRating),
+			runtime: Number(runtime.split(" ").at(0)),
+			userRating,
+		};
+		onAddWatched(newWatchedMovie);
+		onCloseMovie();
+	}
+
 	return (
 		<div className="details">
 			<button className="btn-back" onClick={onCloseMovie}>
