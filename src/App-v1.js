@@ -44,7 +44,7 @@ export default function AppV1() {
 				setError("");
 			} catch (e) {
 				if (e.name !== "AbortError") {
-					console.error(e.message);
+					console.log(e.message);
 					setError(e.message);
 				}
 			} finally {
@@ -56,6 +56,7 @@ export default function AppV1() {
 			setError("");
 			return;
 		}
+		handleCloseMovie();
 		fetchMovies();
 		return () => controller.abort();
 	}, [query]);
@@ -236,6 +237,14 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
 			document.title = "usePopcorn";
 		};
 	}, [title]);
+
+	useEffect(() => {
+		function callBack(e) {
+			if (e.code === "Escape") onCloseMovie();
+		}
+		document.addEventListener("keydown", callBack);
+		return () => document.removeEventListener("keydown", callBack);
+	}, [onCloseMovie]);
 
 	function handleAdd() {
 		const newWatchedMovie = {
