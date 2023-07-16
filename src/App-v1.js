@@ -30,6 +30,7 @@ export default function AppV1() {
 
 	useEffect(() => {
 		const controller = new AbortController();
+
 		async function fetchMovies() {
 			try {
 				setIsLoading(true);
@@ -51,6 +52,7 @@ export default function AppV1() {
 				setIsLoading(false);
 			}
 		}
+
 		if (query.length < 3) {
 			setMovies([]);
 			setError("");
@@ -226,6 +228,7 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
 				setIsLoading(false);
 			}
 		}
+
 		getMovieDetails();
 	}, [selectedId]);
 
@@ -242,6 +245,7 @@ function MovieDetails({selectedId, onCloseMovie, onAddWatched, watched}) {
 		function callBack(e) {
 			if (e.code === "Escape") onCloseMovie();
 		}
+
 		document.addEventListener("keydown", callBack);
 		return () => document.removeEventListener("keydown", callBack);
 	}, [onCloseMovie]);
